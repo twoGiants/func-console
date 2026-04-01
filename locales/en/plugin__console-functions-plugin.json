@@ -1,6 +1,14 @@
 {
-  "Functions": "Functions",
-  "No functions found": "No functions found",
-  "Create a serverless function to get started.": "Create a serverless function to get started.",
-  "Create function": "Create function"
+  "functions": "Functions",
+  "noFunctionsFound": "No functions found",
+  "createFunctionBody": "Create a serverless function to get started.",
+  "createFunction": "Create function",
+  "name": "Name",
+  "runtime": "Runtime",
+  "status": "Status",
+  "url": "URL",
+  "replicas": "Replicas",
+  "actions": "Actions",
+  "edit": "Edit",
+  "delete": "Delete"
 }

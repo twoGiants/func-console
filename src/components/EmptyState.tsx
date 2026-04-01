@@ -12,13 +12,13 @@ export function FunctionsEmptyState() {
   const { t } = useTranslation('plugin__console-functions-plugin');
 
   return (
-    <EmptyState headingLevel="h2" icon={CubesIcon} titleText={t('No functions found')}>
+    <EmptyState headingLevel="h2" icon={CubesIcon} titleText={t('noFunctionsFound')}>
       <EmptyStateBody>
-        {t('Create a serverless function to get started.')}
+        {t('createFunctionBody')}
       </EmptyStateBody>
       <EmptyStateFooter>
         <EmptyStateActions>
-          <Link to="/functions/create">{t('Create function')}</Link>
+          <Link to="/functions/create">{t('createFunction')}</Link>
         </EmptyStateActions>
       </EmptyStateFooter>
     </EmptyState>

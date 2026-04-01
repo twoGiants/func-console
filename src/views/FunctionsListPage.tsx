@@ -8,8 +8,8 @@ export default function FunctionsListPage() {
 
   return (
     <>
-      <DocumentTitle>{t('Functions')}</DocumentTitle>
-      <ListPageHeader title={t('Functions')} />
+      <DocumentTitle>{t('functions')}</DocumentTitle>
+      <ListPageHeader title={t('functions')} />
       <PageSection>
         <FunctionsEmptyState />
       </PageSection>

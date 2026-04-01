@@ -24,11 +24,11 @@ describe('FunctionsListPage', () => {
     );
 
     expect(
-      screen.getByRole('heading', { name: 'No functions found' }),
+      screen.getByRole('heading', { name: 'noFunctionsFound' }),
     ).toBeInTheDocument();
   });
 
-  it('renders a "Create function" link to /functions/create', () => {
+  it('renders a "createFunction" link to /functions/create', () => {
     render(
       <MemoryRouter>
         <FunctionsListPage />
@@ -36,7 +36,7 @@ describe('FunctionsListPage', () => {
     );
 
     expect(
-      screen.getByRole('link', { name: 'Create function' }),
+      screen.getByRole('link', { name: 'createFunction' }),
     ).toHaveAttribute('href', '/functions/create');
   });
 });

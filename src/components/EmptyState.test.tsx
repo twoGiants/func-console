@@ -11,7 +11,7 @@ afterEach(() => {
 });
 
 describe('FunctionsEmptyState', () => {
-  it('renders a heading with "No functions found"', () => {
+  it('renders a heading with "noFunctionsFound"', () => {
     render(
       <MemoryRouter>
         <FunctionsEmptyState />
@@ -19,18 +19,18 @@ describe('FunctionsEmptyState', () => {
     );
 
     expect(
-      screen.getByRole('heading', { name: 'No functions found' }),
+      screen.getByRole('heading', { name: 'noFunctionsFound' }),
     ).toBeInTheDocument();
   });
 
-  it('renders a "Create function" link pointing to /functions/create', () => {
+  it('renders a "createFunction" link pointing to /functions/create', () => {
     render(
       <MemoryRouter>
         <FunctionsEmptyState />
       </MemoryRouter>,
     );
 
-    const link = screen.getByRole('link', { name: 'Create function' });
+    const link = screen.getByRole('link', { name: 'createFunction' });
     expect(link).toHaveAttribute('href', '/functions/create');
   });
 });

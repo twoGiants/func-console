@@ -1,1 +1,16 @@
-[]
+[
+  {
+    "date": "2026-03-31",
+    "description": "Playwright browser plugin cannot execute inside nono sandbox — browser binary not found or npm cache not accessible",
+    "cause": "nono sandbox restricts access to Playwright browser binaries",
+    "suggestion": "Either pre-install Playwright browsers in the sandbox profile or add browser binary path to nono allow-list",
+    "resolved": true
+  },
+  {
+    "date": "2026-04-01",
+    "description": "Concurrent Claude sessions break nono sandbox — EACCES on .claude.json after external session atomically writes it",
+    "cause": "Landlock grants are inode-based; atomic writes (write temp + rename) replace the inode, invalidating the sandbox grant",
+    "suggestion": "Avoid running Claude outside sandbox while sandbox is active, or symlink .claude.json into $HOME/.claude/ directory which has full access",
+    "resolved": false
+  }
+]

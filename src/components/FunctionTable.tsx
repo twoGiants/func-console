@@ -16,7 +16,7 @@ export function FunctionTable({ functions }: { functions: FunctionListItem[] }) 
 
   return (
     <>
-      <Table aria-label={t('Functions')} data-test="functions-table">
+      <Table aria-label={t('functions')} data-test="functions-table">
         <Thead>
           <Tr>
             <Th>{t('name')}</Th>

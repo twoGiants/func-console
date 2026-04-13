@@ -53,7 +53,7 @@ function useFunctionListPage(): {
   loaded: boolean;
   onEdit: (name: string) => void;
 } {
-  const sourceControl = useSourceControl();
+  const sourceControl = useSourceControl('');
   const { deployments, loaded: clusterLoaded } = useClusterService();
   const navigate = useNavigate();
 

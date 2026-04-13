@@ -18,7 +18,7 @@ jest.mock('@openshift-console/dynamic-plugin-sdk', () => ({
 
 const mockUseSourceControl = jest.fn();
 jest.mock('../services/source-control/useSourceControl', () => ({
-  useSourceControl: () => mockUseSourceControl(),
+  useSourceControl: (pat: string) => mockUseSourceControl(pat),
 }));
 
 const mockUseClusterService = jest.fn();

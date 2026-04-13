@@ -33,6 +33,16 @@
   },
   {
     "category": "functional",
+    "description": "Session wide GitHub Personal Access Token",
+    "steps": [
+      "If a user visits the /functions plugin and the GH PAT is not set then there will be prompt to enter it and store it into the session",
+      "The GH PAT it then used where needed (e.g. Function Creation page)",
+      "The GH PAT text box shall be removed from the Function Creation page as it should be stored in the session"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
     "description": "Function List Page renders a table with function entries",
     "steps": [
       "SourceControlService lists function repos via Octokit (topic:serverless-function) and fetches func.yaml per repo for runtime",

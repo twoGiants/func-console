@@ -6,6 +6,7 @@ import FunctionCreatePage from './FunctionCreatePage';
 const mockGenerateFunction = jest.fn();
 const mockPushFiles = jest.fn();
 const mockNavigate = jest.fn();
+const mockUsePat = jest.fn();
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -28,6 +29,15 @@ jest.mock('react-router-dom-v5-compat', () => ({
   useNavigate: () => mockNavigate,
 }));
 
+jest.mock('../hooks/usePat', () => ({
+  usePat: () => mockUsePat(),
+}));
+
+jest.mock('../components/PatModal', () => ({
+  PatModal: ({ isOpen }: { isOpen: boolean }) =>
+    isOpen ? <div data-testid="pat-modal">PatModal-open</div> : null,
+}));
+
 afterEach(() => {
   jest.clearAllMocks();
 });
@@ -36,7 +46,6 @@ const fillForm = async (user: ReturnType<typeof userEvent.setup>) => {
   await user.type(screen.getByRole('textbox', { name: /Owner/ }), 'testuser');
   await user.type(screen.getByRole('textbox', { name: /Repository/ }), 'my-repo');
   await user.type(screen.getByRole('textbox', { name: /Branch/ }), 'main');
-  await user.type(screen.getByLabelText(/Personal Access Token/), 'ghp_token');
   await user.type(screen.getByRole('textbox', { name: /^Name$/ }), 'my-func');
   await user.type(screen.getByRole('textbox', { name: /Registry/ }), 'quay.io/test');
   await user.type(screen.getByRole('textbox', { name: /Namespace/ }), 'default');
@@ -44,6 +53,8 @@ const fillForm = async (user: ReturnType<typeof userEvent.setup>) => {
 
 describe('FunctionCreatePage', () => {
   it('renders CreateFunctionForm', () => {
+    mockUsePat.mockReturnValue({ pat: 'ghp_session', setPat: jest.fn(), clearPat: jest.fn() });
+
     render(
       <MemoryRouter>
         <FunctionCreatePage />
@@ -59,6 +70,7 @@ describe('FunctionCreatePage', () => {
     const files = [{ path: 'func.yaml', mode: '100644', content: 'name: f', type: 'blob' }];
     mockGenerateFunction.mockResolvedValue(files);
     mockPushFiles.mockResolvedValue(undefined);
+    mockUsePat.mockReturnValue({ pat: 'ghp_session', setPat: jest.fn(), clearPat: jest.fn() });
 
     render(
       <MemoryRouter>
@@ -82,7 +94,7 @@ describe('FunctionCreatePage', () => {
     await waitFor(() => {
       expect(mockPushFiles).toHaveBeenCalledWith(
         { owner: 'testuser', repo: 'my-repo', branch: 'main' },
-        'ghp_token',
+        'ghp_session',
         files,
         'Initialize Knative function project',
       );
@@ -96,6 +108,7 @@ describe('FunctionCreatePage', () => {
   it('shows an alert on error', async () => {
     const user = userEvent.setup();
     mockGenerateFunction.mockRejectedValue(new Error('Backend error'));
+    mockUsePat.mockReturnValue({ pat: 'ghp_session', setPat: jest.fn(), clearPat: jest.fn() });
 
     render(
       <MemoryRouter>
@@ -109,5 +122,17 @@ describe('FunctionCreatePage', () => {
     await waitFor(() => {
       expect(screen.getByText('Backend error')).toBeInTheDocument();
     });
+  });
+
+  it('renders PatModal when PAT is empty', () => {
+    mockUsePat.mockReturnValue({ pat: '', setPat: jest.fn(), clearPat: jest.fn() });
+
+    render(
+      <MemoryRouter>
+        <FunctionCreatePage />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText('PatModal-open')).toBeInTheDocument();
   });
 });

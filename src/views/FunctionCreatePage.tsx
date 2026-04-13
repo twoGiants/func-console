@@ -6,12 +6,15 @@ import { useNavigate } from 'react-router-dom-v5-compat';
 import { CreateFunctionForm, CreateFunctionFormData } from '../components/CreateFunctionForm';
 import { useFunctionService } from '../services/function/useFunctionService';
 import { useGitHubService } from '../services/github/useGitHubService';
+import { usePat } from '../hooks/usePat';
+import { PatModal } from '../components/PatModal';
 
 export default function FunctionCreatePage() {
   const { t } = useTranslation('plugin__console-functions-plugin');
   const navigate = useNavigate();
   const functionService = useFunctionService();
   const gitHubService = useGitHubService();
+  const { pat, setPat } = usePat();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +34,7 @@ export default function FunctionCreatePage() {
 
       await gitHubService.pushFiles(
         { owner: data.owner, repo: data.repo, branch: data.branch },
-        data.pat,
+        pat,
         files,
         'Initialize Knative function project',
       );
@@ -50,6 +53,7 @@ export default function FunctionCreatePage() {
 
   return (
     <>
+      <PatModal isOpen={!pat} onSave={setPat} />
       <DocumentTitle>{t('Create function')}</DocumentTitle>
       <ListPageHeader title={t('Create function')} />
       <PageSection>

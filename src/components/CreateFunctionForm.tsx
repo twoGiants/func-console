@@ -16,7 +16,6 @@ export interface CreateFunctionFormData {
   owner: string;
   repo: string;
   branch: string;
-  pat: string;
   name: string;
   runtime: FunctionRuntime;
   registry: string;
@@ -42,16 +41,15 @@ export function CreateFunctionForm({ onSubmit, onCancel, isSubmitting }: CreateF
   const [owner, setOwner] = useState('');
   const [repo, setRepo] = useState('');
   const [branch, setBranch] = useState('');
-  const [pat, setPat] = useState('');
   const [name, setName] = useState('');
   const [runtime, setRuntime] = useState<FunctionRuntime>('node');
   const [registry, setRegistry] = useState('');
   const [namespace, setNamespace] = useState('');
 
-  const isValid = owner && repo && branch && pat && name && registry && namespace;
+  const isValid = owner && repo && branch && name && registry && namespace;
 
   const handleSubmit = () => {
-    onSubmit({ owner, repo, branch, pat, name, runtime, registry, namespace });
+    onSubmit({ owner, repo, branch, name, runtime, registry, namespace });
   };
 
   return (
@@ -79,15 +77,6 @@ export function CreateFunctionForm({ onSubmit, onCancel, isSubmitting }: CreateF
             isRequired
             value={branch}
             onChange={(_e, val) => setBranch(val)}
-          />
-        </FormGroup>
-        <FormGroup label={t('Personal Access Token')} isRequired fieldId="pat">
-          <TextInput
-            id="pat"
-            type="password"
-            isRequired
-            value={pat}
-            onChange={(_e, val) => setPat(val)}
           />
         </FormGroup>
       </FormSection>

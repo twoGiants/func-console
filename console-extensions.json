@@ -12,7 +12,7 @@
     "properties": {
       "id": "functions-list",
       "name": "%plugin__console-functions-plugin~Functions%",
-      "href": "/functions2",
+      "href": "/functions",
       "section": "functions-section",
       "perspective": "dev"
     }
@@ -20,14 +20,14 @@
   {
     "type": "console.page/route",
     "properties": {
-      "path": "/functions2",
+      "path": "/functions",
       "component": { "$codeRef": "FunctionsListPage" }
     }
   },
   {
     "type": "console.page/route",
     "properties": {
-      "path": "/functions2/create",
+      "path": "/functions/create",
       "component": { "$codeRef": "FunctionCreatePage" },
       "exact": true
     }
@@ -35,7 +35,7 @@
   {
     "type": "console.page/route",
     "properties": {
-      "path": "/functions2/edit/:name",
+      "path": "/functions/edit/:name",
       "component": { "$codeRef": "FunctionEditPage" }
     }
   }

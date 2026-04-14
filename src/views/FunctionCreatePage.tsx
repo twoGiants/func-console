@@ -39,7 +39,7 @@ export default function FunctionCreatePage() {
         'Initialize Knative function project',
       );
 
-      navigate('/functions2');
+      navigate('/functions');
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -48,7 +48,7 @@ export default function FunctionCreatePage() {
   };
 
   const handleCancel = () => {
-    navigate('/functions2');
+    navigate('/functions');
   };
 
   return (

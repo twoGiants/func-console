@@ -19,7 +19,7 @@ export function FunctionsEmptyState() {
         <EmptyStateActions>
           <Button
             variant="primary"
-            component={(props) => <Link {...props} to="/functions2/create" />}
+            component={(props) => <Link {...props} to="/functions/create" />}
           >
             {t('Create function')}
           </Button>

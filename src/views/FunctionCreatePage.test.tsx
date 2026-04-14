@@ -101,7 +101,7 @@ describe('FunctionCreatePage', () => {
     });
 
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/functions2');
+      expect(mockNavigate).toHaveBeenCalledWith('/functions');
     });
   });
 

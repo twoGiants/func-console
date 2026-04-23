@@ -2,6 +2,26 @@
 # Newest entries first. Agents: append your entry at the top after the header.
 
 ---
+## 2026-04-28 | Session: Runtime PAT entry and user avatar
+Worked on: Replace compile-time PAT injection with runtime modal entry, add user avatar to page headers
+Completed:
+- Runtime PAT entry via PatModal (PF6 Modal, password input, validation, error alert, small variant)
+- UserAvatar component in ListPageHeader on all pages (list: clickable, create/edit: disabled)
+- PatModal and useUserAvatar consolidated into UserAvatar as private internals, usePatModal hook extracted
+- ForgeConnectionProvider context for cross-component PAT state sharing
+- GithubService refactored: lazy auth via cached Octokit getter, fetchUserInfo on SourceControlService interface
+- ForgeUser type (forge-agnostic naming), PAT and user stored in sessionStorage
+- EmptyState simplified to single isCreateDisabled prop (PAT hint text internal, no Tooltip)
+- FunctionsListPage wired: autoOpen modal, disabled Create when unauthenticated, skip API call when no PAT
+- FunctionCreatePage protected against unauthenticated URL access (warning alert, form hidden)
+- Removed DefinePlugin for __GITHUB_PAT__ from webpack.config.ts, deleted src/globals.d.ts
+- Extracted errorMessage utility (src/utils/errorMessage.ts)
+- Cancel and modal close disabled while validating
+- 9 suites, 55 tests, all passing, zero lint errors
+Left off: Squash and merge PR #15.
+Blockers: None
+
+---
 ## 2026-04-20 | Session: CI/CD pipeline and ESLint fixes
 Worked on: GitHub Actions CI/CD pipeline, ESLint config fixes, README restructure
 Completed:

@@ -6,25 +6,42 @@ import {
 import { Button, Content, ContentVariants, PageSection, Spinner } from '@patternfly/react-core';
 import { Link, useNavigate } from 'react-router-dom-v5-compat';
 import { useTranslation } from 'react-i18next';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useContext } from 'react';
 import { FunctionsEmptyState } from '../components/EmptyState';
 import { FunctionStatus, FunctionTable, FunctionTableItem } from '../components/FunctionTable';
 import { useSourceControlService } from '../services/source-control/useSourceControlService';
 import { useClusterService } from '../services/cluster/useClusterService';
+import {
+  ForgeConnectionProvider,
+  ForgeConnectionContext,
+} from '../context/ForgeConnectionProvider';
+import { UserAvatar } from '../components/UserAvatar';
 
 export default function FunctionsListPage() {
+  return (
+    <ForgeConnectionProvider>
+      <FunctionsListPageContent />
+    </ForgeConnectionProvider>
+  );
+}
+
+function FunctionsListPageContent() {
   const { t } = useTranslation('plugin__console-functions-plugin');
-  const { functions, loaded, onEdit } = useFunctionListPage();
+  const { functions, loaded, onEdit, isConnectedToForge } = useFunctionListPage();
 
   return (
     <>
       <DocumentTitle>{t('Functions')}</DocumentTitle>
-      <ListPageHeader title={t('Functions')} />
+      <ListPageHeader title={t('Functions')}>
+        <UserAvatar enableReconnect />
+      </ListPageHeader>
       <PageSection>
         {!loaded && (
           <Spinner aria-label={t('Loading')} style={{ display: 'block', margin: '4rem auto' }} />
         )}
-        {loaded && functions.length === 0 && <FunctionsEmptyState />}
+        {loaded && functions.length === 0 && (
+          <FunctionsEmptyState isCreateDisabled={!isConnectedToForge} />
+        )}
         {loaded && functions.length > 0 && (
           <>
             <Content component={ContentVariants.p}>
@@ -33,12 +50,18 @@ export default function FunctionsListPage() {
               )}
             </Content>
             <Content component={ContentVariants.p}>
-              <Button
-                variant="primary"
-                component={(props) => <Link {...props} to="/faas/create" />}
-              >
-                {t('Create new function')}
-              </Button>
+              {!isConnectedToForge ? (
+                <Button variant="primary" isDisabled>
+                  {t('Create new function')}
+                </Button>
+              ) : (
+                <Button
+                  variant="primary"
+                  component={(props) => <Link {...props} to="/faas/create" />}
+                >
+                  {t('Create new function')}
+                </Button>
+              )}
             </Content>
             <FunctionTable functions={functions} onEdit={onEdit} />
           </>
@@ -52,15 +75,31 @@ function useFunctionListPage(): {
   functions: FunctionTableItem[];
   loaded: boolean;
   onEdit: (name: string) => void;
+  isConnectedToForge: boolean;
 } {
+  const isConnectedToForge = useContext(ForgeConnectionContext).isActive;
   const sourceControl = useSourceControlService();
   const { deployments, loaded: clusterLoaded } = useClusterService();
   const navigate = useNavigate();
 
   const [functionItems, setFunctionItems] = useState<FunctionTableItem[]>([]);
-  const [reposLoaded, setReposLoaded] = useState(false);
+  const [reposLoaded, setReposLoaded] = useState(!isConnectedToForge);
+  const [wasConnectedToForge, setWasConnectedToForge] = useState(isConnectedToForge);
+
+  // Reset state when authentication status changes (render-time adjustment)
+  if (isConnectedToForge !== wasConnectedToForge) {
+    setWasConnectedToForge(isConnectedToForge);
+    if (isConnectedToForge) {
+      setReposLoaded(false);
+    } else {
+      setFunctionItems([]);
+      setReposLoaded(true);
+    }
+  }
 
   useEffect(() => {
+    if (!isConnectedToForge) return;
+
     let ignore = false;
 
     async function loadFunctionTableItems() {
@@ -79,14 +118,12 @@ function useFunctionListPage(): {
     }
 
     loadFunctionTableItems().catch(() => {
-      if (!ignore) {
-        setReposLoaded(true);
-      }
+      if (!ignore) setReposLoaded(true);
     });
     return () => {
       ignore = true;
     };
-  }, [sourceControl]);
+  }, [sourceControl, isConnectedToForge]);
 
   const functions = useMemo(
     () =>
@@ -102,7 +139,7 @@ function useFunctionListPage(): {
   const loaded = reposLoaded && clusterLoaded;
 
   const onEdit = (name: string) => navigate(`/faas/edit/${name}`);
-  return { functions, loaded, onEdit };
+  return { functions, loaded, onEdit, isConnectedToForge };
 }
 
 function parseNamespaceAndRuntime(

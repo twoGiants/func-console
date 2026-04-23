@@ -6,26 +6,43 @@ import { useNavigate } from 'react-router-dom-v5-compat';
 import { CreateFunctionForm, CreateFunctionFormData } from '../components/CreateFunctionForm';
 import { useFunctionService } from '../services/function/useFunctionService';
 import { useSourceControlService } from '../services/source-control/useSourceControlService';
+import { UserAvatar } from '../components/UserAvatar';
+import { PAT_KEY } from '../services/types';
+import { errorMessage } from '../utils/errorMessage';
 
 export default function FunctionCreatePage() {
   const { t } = useTranslation('plugin__console-functions-plugin');
+  const isConnected = !!sessionStorage.getItem(PAT_KEY);
   const { isSubmitting, error, handleSubmit, handleCancel } = useFunctionCreatePage();
 
   return (
     <>
       <DocumentTitle>{t('Create function')}</DocumentTitle>
-      <ListPageHeader title={t('Create function')} />
+      <ListPageHeader title={t('Create function')}>
+        <UserAvatar enableReconnect={false} />
+      </ListPageHeader>
       <PageSection>
+        {!isConnected && (
+          <Alert
+            variant="warning"
+            title={t(
+              "A GitHub Personal Access Token is required to create functions. Go to the Functions page and click 'Connect to GitHub' to connect.",
+            )}
+            isInline
+          />
+        )}
         {error && (
           <Alert variant="danger" title={t('Error creating function')} isInline>
             {error}
           </Alert>
         )}
-        <CreateFunctionForm
-          onSubmit={handleSubmit}
-          onCancel={handleCancel}
-          isSubmitting={isSubmitting}
-        />
+        {isConnected && (
+          <CreateFunctionForm
+            onSubmit={handleSubmit}
+            onCancel={handleCancel}
+            isSubmitting={isSubmitting}
+          />
+        )}
       </PageSection>
     </>
   );
@@ -60,7 +77,7 @@ function useFunctionCreatePage() {
 
       navigate('/faas');
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      setError(errorMessage(err));
     } finally {
       setIsSubmitting(false);
     }

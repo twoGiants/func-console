@@ -39,13 +39,23 @@ Arrows mean "imports / depends on."
 - Services never import Components or Views
 - No circular dependencies
 
-## Page / Component / Hook Rules
+## React
 
-**Components are simple** — they receive data via props, render it, and call callbacks to return data to the parent (or use context). No logic at the top of a component.
+### Page / Component / Hook Rules
 
-**Pages are smart** — they use central hooks (e.g. `useClusterService`, `useSourceControl`) to fetch, prepare, and transform all data needed for downstream components.
+**Components are simple by default** — they receive data via props, render it, and call callbacks. No logic at the top of a component.
 
-**Extract logic into hooks** — if a page or component has any logic (state management, data transformation, side effects), extract it into a co-named hook: `FunctionTable.tsx` → `useFunctionTable.ts`, `FunctionsListPage.tsx` → `useFunctionsListPage.ts`. If there is no logic, no hook is needed.
+**A component may own its own data and state when it encapsulates a self-contained capability that is not specific to any one page** (e.g., forge connection, auth flows, notification subscriptions). The component becomes the single owner of that concern. Pages consume it without orchestrating its internals.
+
+**Pages are smart for page-specific data** — they use central hooks (e.g. `useClusterService`, `useSourceControl`) to fetch, prepare, and transform all data needed for downstream components.
+
+**Extract logic into hooks** — if a page or component has any logic (state management, data transformation, side effects), extract it into a custom hook. If the hook is reused by multiple components, put it in a separate file: `useFunctionTable.ts`. If the hook is only used by one component, keep it in the same file, do not export it. If there is no logic, no hook is needed.
+
+**File ordering** — within a file, put the exported component at the top, then its hook below, then helper functions at the bottom. Readers see the main thing first and can drill down.
+
+### Performance
+
+- **No speculative memoization**: Do not wrap every function in `useCallback` or every value in `useMemo` as a habit. Use them when there is a concrete reason: a `React.memo` child that depends on a stable reference, or a known re-render path (e.g., a sibling component re-rendering on every keystroke). Plain functions and derived values are the default.
 
 ## Architectural Guidance
 

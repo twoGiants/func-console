@@ -2,14 +2,14 @@ import { consoleFetchJSON } from '@openshift-console/dynamic-plugin-sdk';
 import { FunctionBackendService } from './FunctionBackendService';
 import { FileEntry, FunctionConfig } from '../types';
 
-jest.mock('@openshift-console/dynamic-plugin-sdk', () => ({
+vi.mock('@openshift-console/dynamic-plugin-sdk', () => ({
   consoleFetchJSON: {
-    post: jest.fn(),
+    post: vi.fn(),
   },
 }));
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  vi.restoreAllMocks();
 });
 
 const config: FunctionConfig = {
@@ -27,7 +27,7 @@ const files: FileEntry[] = [
 
 describe('FunctionBackendService', () => {
   it('calls consoleFetchJSON.post with the proxy URL and returns generated files', async () => {
-    (consoleFetchJSON.post as jest.Mock).mockResolvedValue(files);
+    vi.mocked(consoleFetchJSON.post).mockResolvedValue(files);
 
     const service = new FunctionBackendService();
     const result = await service.generateFunction(config);
@@ -40,9 +40,7 @@ describe('FunctionBackendService', () => {
   });
 
   it('throws when consoleFetchJSON.post rejects', async () => {
-    (consoleFetchJSON.post as jest.Mock).mockRejectedValue(
-      new Error('failed to initialize function'),
-    );
+    vi.mocked(consoleFetchJSON.post).mockRejectedValue(new Error('failed to initialize function'));
 
     const service = new FunctionBackendService();
 

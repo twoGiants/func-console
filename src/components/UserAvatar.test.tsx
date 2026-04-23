@@ -5,12 +5,12 @@ import { PAT_KEY, USER_KEY } from '../services/types';
 import { ForgeConnectionContext } from '../context/ForgeConnectionProvider';
 import { ReactNode } from 'react';
 
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
-const mockFetchUserInfo = jest.fn();
-jest.mock('../services/source-control/useSourceControlService', () => ({
+const mockFetchUserInfo = vi.fn();
+vi.mock('../services/source-control/useSourceControlService', () => ({
   useSourceControlService: () => ({
     fetchUserInfo: mockFetchUserInfo,
   }),
@@ -20,7 +20,7 @@ const testUser = { name: 'twoGiants' };
 
 function renderWithContext(
   ui: ReactNode,
-  contextValue = { isActive: false, connectToForge: jest.fn() },
+  contextValue = { isActive: false, connectToForge: vi.fn() },
 ) {
   return render(
     <ForgeConnectionContext.Provider value={contextValue}>{ui}</ForgeConnectionContext.Provider>,
@@ -33,7 +33,7 @@ describe('UserAvatar', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   afterAll(() => {
@@ -114,7 +114,7 @@ describe('UserAvatar', () => {
 
     it('calls fetchUserInfo with PAT and updates UI on successful connect', async () => {
       const user = userEvent.setup();
-      const connectToForge = jest.fn();
+      const connectToForge = vi.fn();
       mockFetchUserInfo.mockResolvedValue(testUser);
 
       renderWithContext(<UserAvatar enableReconnect />, { isActive: false, connectToForge });

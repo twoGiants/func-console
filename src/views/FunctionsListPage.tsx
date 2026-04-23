@@ -16,6 +16,8 @@ import {
   ForgeConnectionContext,
 } from '../context/ForgeConnectionProvider';
 import { UserAvatar } from '../components/UserAvatar';
+import { RepoMetadata } from '../services/types';
+import { parseNamespaceAndRuntime } from '../utils/utils';
 
 export default function FunctionsListPage() {
   return (
@@ -103,23 +105,28 @@ function useFunctionListPage(): {
     let ignore = false;
 
     async function loadFunctionTableItems() {
-      const repos = await sourceControl.listFunctionRepos();
-      const items = await Promise.all(
-        repos.map(async (repo) => {
-          const funcYaml = await sourceControl.fetchFileContent(repo, 'func.yaml');
-          const { namespace, runtime } = parseNamespaceAndRuntime(funcYaml, repo.name);
-          return newItem(repo.name, namespace, runtime);
-        }),
-      );
-      if (!ignore) {
-        setFunctionItems(items);
-        setReposLoaded(true);
+      let repos: RepoMetadata[];
+      let items: FunctionTableItem[];
+      try {
+        repos = await sourceControl.listFunctionRepos();
+        items = await Promise.all(
+          repos.map(async (repo) => {
+            const funcYaml = await sourceControl.fetchFileContent(repo, 'func.yaml');
+            const { namespace, runtime } = parseNamespaceAndRuntime(funcYaml);
+            return newItem(repo.name, namespace, runtime);
+          }),
+        );
+      } catch {
+        if (!ignore) setReposLoaded(true);
+        return;
       }
+      if (ignore) return;
+
+      setFunctionItems(items);
+      setReposLoaded(true);
     }
 
-    loadFunctionTableItems().catch(() => {
-      if (!ignore) setReposLoaded(true);
-    });
+    loadFunctionTableItems();
     return () => {
       ignore = true;
     };
@@ -140,19 +147,6 @@ function useFunctionListPage(): {
 
   const onEdit = (name: string) => navigate(`/faas/edit/${name}`);
   return { functions, loaded, onEdit, isConnectedToForge };
-}
-
-function parseNamespaceAndRuntime(
-  funcYaml: string,
-  repoName: string,
-): {
-  namespace: string;
-  runtime: string;
-} {
-  const runtimeMatch = funcYaml.match(/^runtime:\s*(.+)$/m);
-  const namespaceMatch = funcYaml.match(/^namespace:\s*(.+)$/m);
-  if (!runtimeMatch) throw new Error(`func.yaml in ${repoName} missing runtime field`);
-  return { namespace: namespaceMatch?.[1]?.trim() ?? '', runtime: runtimeMatch[1].trim() };
 }
 
 function newItem(repoName: string, namespace: string, runtime: string): FunctionTableItem {

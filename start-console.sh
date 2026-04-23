@@ -59,6 +59,10 @@ fi
 BRIDGE_PLUGINS="${PLUGIN_NAME}=http://${PLUGIN_HOST}:9001"
 BRIDGE_PLUGIN_PROXY='{"services":[{"consoleAPIPath":"/api/proxy/plugin/'"${PLUGIN_NAME}"'/backend/","endpoint":"http://'"${PLUGIN_HOST}"':8080","authorize":false}]}'
 
+# Allow browser to connect to GitHub API (CSP connect-src).
+# Production uses ConsolePlugin.spec.contentSecurityPolicy instead.
+BRIDGE_CONTENT_SECURITY_POLICY="connect-src=https://api.github.com"
+
 echo "BRIDGE_PLUGINS=$BRIDGE_PLUGINS"
 echo "BRIDGE_PLUGIN_PROXY=$BRIDGE_PLUGIN_PROXY"
 

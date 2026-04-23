@@ -3,11 +3,11 @@ import { MemoryRouter } from 'react-router-dom-v5-compat';
 import FunctionsListPage from './FunctionsListPage';
 import { PAT_KEY } from '../services/types';
 
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
-jest.mock('@openshift-console/dynamic-plugin-sdk', () => ({
+vi.mock('@openshift-console/dynamic-plugin-sdk', () => ({
   DocumentTitle: ({ children }: { children: string }) => children,
   ListPageHeader: ({ title, children }: { title: string; children?: React.ReactNode }) => (
     <>
@@ -17,22 +17,22 @@ jest.mock('@openshift-console/dynamic-plugin-sdk', () => ({
   ),
 }));
 
-const mockUseSourceControl = jest.fn();
-jest.mock('../services/source-control/useSourceControlService', () => ({
+const mockUseSourceControl = vi.fn();
+vi.mock('../services/source-control/useSourceControlService', () => ({
   useSourceControlService: () => mockUseSourceControl(),
 }));
 
-const mockUseClusterService = jest.fn();
-jest.mock('../services/cluster/useClusterService', () => ({
+const mockUseClusterService = vi.fn();
+vi.mock('../services/cluster/useClusterService', () => ({
   useClusterService: () => mockUseClusterService(),
 }));
 
-jest.mock('../components/FunctionTable', () => ({
+vi.mock('../components/FunctionTable', () => ({
   FunctionTable: ({ functions }: { functions: { name: string }[] }) =>
     functions.map((f) => f.name).join(','),
 }));
 
-jest.mock('../components/UserAvatar', () => ({
+vi.mock('../components/UserAvatar', () => ({
   UserAvatar: ({ enableReconnect }: { enableReconnect: boolean }) => (
     <span data-testid="user-avatar">{enableReconnect ? 'reconnect' : 'no-reconnect'}</span>
   ),
@@ -48,7 +48,7 @@ describe('FunctionsListPage', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   afterAll(() => {
@@ -58,8 +58,8 @@ describe('FunctionsListPage', () => {
   it('renders a spinner while loading', () => {
     renderAuthenticated();
     mockUseSourceControl.mockReturnValue({
-      listFunctionRepos: jest.fn().mockResolvedValue([]),
-      fetchFileContent: jest.fn(),
+      listFunctionRepos: vi.fn().mockResolvedValue([]),
+      fetchFileContent: vi.fn(),
     });
     mockUseClusterService.mockReturnValue({ deployments: [], loaded: false, error: null });
 
@@ -75,8 +75,8 @@ describe('FunctionsListPage', () => {
   it('renders the empty state when loaded with no functions', async () => {
     renderAuthenticated();
     mockUseSourceControl.mockReturnValue({
-      listFunctionRepos: jest.fn().mockResolvedValue([]),
-      fetchFileContent: jest.fn(),
+      listFunctionRepos: vi.fn().mockResolvedValue([]),
+      fetchFileContent: vi.fn(),
     });
     mockUseClusterService.mockReturnValue({ deployments: [], loaded: true, error: null });
 
@@ -92,7 +92,7 @@ describe('FunctionsListPage', () => {
   it('renders table when functions are loaded', async () => {
     renderAuthenticated();
     mockUseSourceControl.mockReturnValue({
-      listFunctionRepos: jest.fn().mockResolvedValue([
+      listFunctionRepos: vi.fn().mockResolvedValue([
         {
           owner: 'twoGiants',
           name: 'my-func',
@@ -100,9 +100,7 @@ describe('FunctionsListPage', () => {
           defaultBranch: 'main',
         },
       ]),
-      fetchFileContent: jest
-        .fn()
-        .mockResolvedValue('name: my-func\nruntime: go\nnamespace: demo\n'),
+      fetchFileContent: vi.fn().mockResolvedValue('name: my-func\nruntime: go\nnamespace: demo\n'),
     });
     mockUseClusterService.mockReturnValue({
       deployments: [
@@ -134,7 +132,7 @@ describe('FunctionsListPage', () => {
   it('shows NotDeployed status for repos without cluster deployment', async () => {
     renderAuthenticated();
     mockUseSourceControl.mockReturnValue({
-      listFunctionRepos: jest.fn().mockResolvedValue([
+      listFunctionRepos: vi.fn().mockResolvedValue([
         {
           owner: 'twoGiants',
           name: 'orphan-func',
@@ -142,7 +140,7 @@ describe('FunctionsListPage', () => {
           defaultBranch: 'main',
         },
       ]),
-      fetchFileContent: jest
+      fetchFileContent: vi
         .fn()
         .mockResolvedValue('name: orphan-func\nruntime: node\nnamespace: demo\n'),
     });
@@ -160,8 +158,8 @@ describe('FunctionsListPage', () => {
   it('renders empty state when GitHub API fails', async () => {
     renderAuthenticated();
     mockUseSourceControl.mockReturnValue({
-      listFunctionRepos: jest.fn().mockRejectedValue(new Error('Requires authentication')),
-      fetchFileContent: jest.fn(),
+      listFunctionRepos: vi.fn().mockRejectedValue(new Error('Requires authentication')),
+      fetchFileContent: vi.fn(),
     });
     mockUseClusterService.mockReturnValue({ deployments: [], loaded: true, error: null });
 
@@ -175,10 +173,10 @@ describe('FunctionsListPage', () => {
   });
 
   it('does not call listFunctionRepos when not authenticated', async () => {
-    const mockListRepos = jest.fn().mockResolvedValue([]);
+    const mockListRepos = vi.fn().mockResolvedValue([]);
     mockUseSourceControl.mockReturnValue({
       listFunctionRepos: mockListRepos,
-      fetchFileContent: jest.fn(),
+      fetchFileContent: vi.fn(),
     });
     mockUseClusterService.mockReturnValue({ deployments: [], loaded: true, error: null });
 
@@ -196,8 +194,8 @@ describe('FunctionsListPage', () => {
   it('renders UserAvatar in header', () => {
     renderAuthenticated();
     mockUseSourceControl.mockReturnValue({
-      listFunctionRepos: jest.fn().mockResolvedValue([]),
-      fetchFileContent: jest.fn(),
+      listFunctionRepos: vi.fn().mockResolvedValue([]),
+      fetchFileContent: vi.fn(),
     });
     mockUseClusterService.mockReturnValue({ deployments: [], loaded: true, error: null });
 
@@ -212,8 +210,8 @@ describe('FunctionsListPage', () => {
 
   it('empty state receives hint and isCreateDisabled when not authenticated', async () => {
     mockUseSourceControl.mockReturnValue({
-      listFunctionRepos: jest.fn().mockResolvedValue([]),
-      fetchFileContent: jest.fn(),
+      listFunctionRepos: vi.fn().mockResolvedValue([]),
+      fetchFileContent: vi.fn(),
     });
     mockUseClusterService.mockReturnValue({ deployments: [], loaded: true, error: null });
 

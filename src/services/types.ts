@@ -18,13 +18,7 @@ export interface FunctionConfig {
 
 export type FunctionRuntime = 'node' | 'python' | 'go' | 'quarkus';
 
-export interface RepoInfo {
-  owner: string;
-  repo: string;
-  branch: string;
-}
-
-export interface SourceRepo {
+export interface RepoMetadata {
   owner: string;
   name: string;
   url: string;

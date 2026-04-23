@@ -3,13 +3,13 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom-v5-compat';
 import { FunctionTable, FunctionTableItem } from './FunctionTable';
 
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
-const mockUseDeleteModal = jest.fn().mockReturnValue(jest.fn());
+const mockUseDeleteModal = vi.fn().mockReturnValue(vi.fn());
 
-jest.mock('@openshift-console/dynamic-plugin-sdk', () => ({
+vi.mock('@openshift-console/dynamic-plugin-sdk', () => ({
   SuccessStatus: ({ title }: { title: string }) => `Success: ${title}`,
   ProgressStatus: ({ title }: { title: string }) => `Progress: ${title}`,
   ErrorStatus: ({ title }: { title: string }) => `Error: ${title}`,
@@ -18,14 +18,14 @@ jest.mock('@openshift-console/dynamic-plugin-sdk', () => ({
   useDeleteModal: (...args: unknown[]) => mockUseDeleteModal(...args),
 }));
 
-jest.mock('@patternfly/react-icons', () => ({
+vi.mock('@patternfly/react-icons', () => ({
   ExclamationTriangleIcon: () => 'WarningIcon',
   PencilAltIcon: () => 'EditIcon',
   TrashIcon: () => 'DeleteIcon',
 }));
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  vi.restoreAllMocks();
 });
 
 const mockDeployment = {
@@ -61,7 +61,7 @@ describe('FunctionTable', () => {
   it('renders a row for each function', () => {
     render(
       <MemoryRouter>
-        <FunctionTable functions={mockFunctions} onEdit={jest.fn()} />
+        <FunctionTable functions={mockFunctions} onEdit={vi.fn()} />
       </MemoryRouter>,
     );
 
@@ -72,7 +72,7 @@ describe('FunctionTable', () => {
   it('renders namespace with dash for empty value', () => {
     render(
       <MemoryRouter>
-        <FunctionTable functions={mockFunctions} onEdit={jest.fn()} />
+        <FunctionTable functions={mockFunctions} onEdit={vi.fn()} />
       </MemoryRouter>,
     );
 
@@ -84,7 +84,7 @@ describe('FunctionTable', () => {
   it('renders SuccessStatus for Running functions', () => {
     render(
       <MemoryRouter>
-        <FunctionTable functions={[mockFunctions[0]]} onEdit={jest.fn()} />
+        <FunctionTable functions={[mockFunctions[0]]} onEdit={vi.fn()} />
       </MemoryRouter>,
     );
 
@@ -94,7 +94,7 @@ describe('FunctionTable', () => {
   it('renders InfoStatus for NotDeployed functions', () => {
     render(
       <MemoryRouter>
-        <FunctionTable functions={[mockFunctions[1]]} onEdit={jest.fn()} />
+        <FunctionTable functions={[mockFunctions[1]]} onEdit={vi.fn()} />
       </MemoryRouter>,
     );
 
@@ -104,7 +104,7 @@ describe('FunctionTable', () => {
   it('displays hostname-only link for URL', () => {
     render(
       <MemoryRouter>
-        <FunctionTable functions={[mockFunctions[0]]} onEdit={jest.fn()} />
+        <FunctionTable functions={[mockFunctions[0]]} onEdit={vi.fn()} />
       </MemoryRouter>,
     );
 
@@ -114,7 +114,7 @@ describe('FunctionTable', () => {
   });
 
   it('calls onEdit when edit button is clicked', async () => {
-    const onEdit = jest.fn();
+    const onEdit = vi.fn();
     const user = userEvent.setup();
 
     render(
@@ -128,13 +128,13 @@ describe('FunctionTable', () => {
   });
 
   it('launches delete modal when delete button is clicked', async () => {
-    const mockLauncher = jest.fn();
+    const mockLauncher = vi.fn();
     mockUseDeleteModal.mockReturnValue(mockLauncher);
     const user = userEvent.setup();
 
     render(
       <MemoryRouter>
-        <FunctionTable functions={[mockFunctions[0]]} onEdit={jest.fn()} />
+        <FunctionTable functions={[mockFunctions[0]]} onEdit={vi.fn()} />
       </MemoryRouter>,
     );
 
@@ -151,7 +151,7 @@ describe('FunctionTable', () => {
   it('disables delete button for NotDeployed functions', () => {
     render(
       <MemoryRouter>
-        <FunctionTable functions={[mockFunctions[1]]} onEdit={jest.fn()} />
+        <FunctionTable functions={[mockFunctions[1]]} onEdit={vi.fn()} />
       </MemoryRouter>,
     );
 

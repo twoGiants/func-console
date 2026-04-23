@@ -1,16 +1,16 @@
 import { render, screen } from '@testing-library/react';
 import { useClusterService } from './useClusterService';
 
-const mockUseK8sWatchResource = jest.fn();
-const mockUseActiveNamespace = jest.fn();
+const mockUseK8sWatchResource = vi.fn();
+const mockUseActiveNamespace = vi.fn();
 
-jest.mock('@openshift-console/dynamic-plugin-sdk', () => ({
+vi.mock('@openshift-console/dynamic-plugin-sdk', () => ({
   useK8sWatchResource: (...args: unknown[]) => mockUseK8sWatchResource(...args),
   useActiveNamespace: () => mockUseActiveNamespace(),
 }));
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  vi.restoreAllMocks();
 });
 
 const mockDeployment = {

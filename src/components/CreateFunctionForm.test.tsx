@@ -2,17 +2,17 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CreateFunctionForm } from './CreateFunctionForm';
 
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  vi.restoreAllMocks();
 });
 
 describe('CreateFunctionForm', () => {
-  const onSubmit = jest.fn();
-  const onCancel = jest.fn();
+  const onSubmit = vi.fn();
+  const onCancel = vi.fn();
 
   beforeEach(() => {
     onSubmit.mockClear();

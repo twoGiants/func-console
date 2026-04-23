@@ -17,7 +17,7 @@ Every session, before doing any work:
 After [Startup Sequence](#startup-sequence), work through the picked feature:
 
 1. **Plan** — read `docs/ARCHITECTURE.md` + `docs/STYLEGUIDE.md` + `docs/TESTING.md`, then use `/brainstorming` to design the chosen feature from `docs/features.json`, then use `/writing-plans` to create implementation plan → `docs/plans/active/<NNN>-<type>-<short-name>.md`
-2. **Branch** — create feature branch per [Branching](#branching) convention
+2. **Branch** — create feature branch per [Branching](#branching) convention. Immediately push and open a **draft PR** (`gh pr create --draft`) to reserve the PR number for other contributors' branch numbering.
 3. **Implement** — using `/executing-plans` skill
 4. **Review** — code review using `/requesting-code-review` skill, fix found issues
 5. **Manual Test** — use browser automation and validate it works in the browser

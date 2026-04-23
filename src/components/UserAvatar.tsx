@@ -15,7 +15,7 @@ import { ForgeUser, PAT_KEY, USER_KEY } from '../services/types';
 import { useContext, useState } from 'react';
 import { ForgeConnectionContext } from '../context/ForgeConnectionProvider';
 import { useSourceControlService } from '../services/source-control/useSourceControlService';
-import { errorMessage } from '../utils/errorMessage';
+import { errorMessage } from '../utils/utils';
 
 interface UserAvatarProps {
   enableReconnect: boolean;

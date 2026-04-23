@@ -22,5 +22,16 @@
       "Namespace column visible in admin perspective, hidden in dev perspective (redundant with project selector)"
     ],
     "passes": false
+  },
+  {
+    "category": "technical",
+    "description": "Replace per-file blob fetching in GithubService.fetch() with single archive download (downloadTarballArchive) and extraction for better performance",
+    "steps": [
+      "Download repo as tarball via octokit.repos.downloadTarballArchive()",
+      "Decompress gzip with DecompressionStream, parse tar format",
+      "Strip the prefix directory from extracted paths",
+      "Return FileEntry[] from extracted contents instead of N+1 getBlob calls"
+    ],
+    "passes": false
   }
 ]

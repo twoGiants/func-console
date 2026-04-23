@@ -8,7 +8,7 @@ import { useFunctionService } from '../services/function/useFunctionService';
 import { useSourceControlService } from '../services/source-control/useSourceControlService';
 import { UserAvatar } from '../components/UserAvatar';
 import { PAT_KEY } from '../services/types';
-import { errorMessage } from '../utils/errorMessage';
+import { errorMessage } from '../utils/utils';
 
 export default function FunctionCreatePage() {
   const { t } = useTranslation('plugin__console-functions-plugin');
@@ -70,7 +70,7 @@ function useFunctionCreatePage() {
       });
 
       await sourceControl.push(
-        { owner: data.owner, repo: data.repo, branch: data.branch },
+        { owner: data.owner, name: data.repo, url: '', defaultBranch: data.branch },
         files,
         'Initialize Knative function project',
       );

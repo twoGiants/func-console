@@ -4,15 +4,15 @@ import { MemoryRouter } from 'react-router-dom';
 import FunctionCreatePage from './FunctionCreatePage';
 import { PAT_KEY } from '../services/types';
 
-const mockGenerateFunction = jest.fn();
-const mockPush = jest.fn();
-const mockNavigate = jest.fn();
+const mockGenerateFunction = vi.fn();
+const mockPush = vi.fn();
+const mockNavigate = vi.fn();
 
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
-jest.mock('@openshift-console/dynamic-plugin-sdk', () => ({
+vi.mock('@openshift-console/dynamic-plugin-sdk', () => ({
   DocumentTitle: ({ children }: { children: string }) => children,
   ListPageHeader: ({ title, children }: { title: string; children?: React.ReactNode }) => (
     <>
@@ -22,23 +22,23 @@ jest.mock('@openshift-console/dynamic-plugin-sdk', () => ({
   ),
 }));
 
-jest.mock('../services/function/useFunctionService', () => ({
+vi.mock('../services/function/useFunctionService', () => ({
   useFunctionService: () => ({ generateFunction: mockGenerateFunction }),
 }));
 
-jest.mock('../services/source-control/useSourceControlService', () => ({
+vi.mock('../services/source-control/useSourceControlService', () => ({
   useSourceControlService: () => ({
     push: mockPush,
-    listFunctionRepos: jest.fn(),
-    fetchFileContent: jest.fn(),
+    listFunctionRepos: vi.fn(),
+    fetchFileContent: vi.fn(),
   }),
 }));
 
-jest.mock('react-router-dom-v5-compat', () => ({
+vi.mock('react-router-dom-v5-compat', () => ({
   useNavigate: () => mockNavigate,
 }));
 
-jest.mock('../components/UserAvatar', () => ({
+vi.mock('../components/UserAvatar', () => ({
   UserAvatar: ({ enableReconnect }: { enableReconnect: boolean }) => (
     <span data-testid="user-avatar">{enableReconnect ? 'reconnect' : 'no-reconnect'}</span>
   ),
@@ -49,7 +49,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 afterAll(() => {
@@ -107,7 +107,7 @@ describe('FunctionCreatePage', () => {
 
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith(
-        { owner: 'testuser', repo: 'my-repo', branch: 'main' },
+        { owner: 'testuser', name: 'my-repo', url: '', defaultBranch: 'main' },
         files,
         'Initialize Knative function project',
       );

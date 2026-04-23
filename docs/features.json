@@ -97,6 +97,19 @@
     "passes": true
   },
   {
+    "category": "technical",
+    "description": "CI/CD: GitHub Actions pipelines for PR checks and master publish to GHCR, plus lint fixes and README deployment instructions",
+    "steps": [
+      "PR pipeline (.github/workflows/pr.yml): triggers on pull_request to master, runs yarn install --immutable, yarn lint, yarn test — branch cannot merge without passing checks and an approval",
+      "Publish pipeline (.github/workflows/publish.yml): triggers on push to master (merged PRs), runs yarn install --immutable, yarn lint, yarn test, then builds multi-arch container image via docker/build-push-action using existing Dockerfile and pushes to ghcr.io/twogiants/console-functions-plugin with :latest and :sha-<commit> tags",
+      "Both pipelines use actions/setup-node@v4 with node-version 22, corepack enable, and cache: yarn for Yarn install caching (GitHub runners ship Node 20 by default with corepack disabled)",
+      "Both pipelines authenticate to GHCR using GITHUB_TOKEN secret with packages:write permission (token added to repo's Actions secrets)",
+      "Add yarn lint script to package.json if missing, run it, and fix all lint errors in the codebase",
+      "Update README.md deployment section (lines 96-117) — replace generic Helm boilerplate, placeholder commands, and obsolete OCP 4.10 / i18n notes with concrete instructions: oc new-project console-functions-plugin, helm upgrade -i console-functions-plugin charts/openshift-console-plugin -n console-functions-plugin --create-namespace --set plugin.image=ghcr.io/twogiants/console-functions-plugin:latest@sha256:<digest>"
+    ],
+    "passes": true
+  },
+  {
     "category": "functional",
     "description": "GitHub PAT Avatar: session-wide PAT entry via modal + avatar component showing authenticated GitHub user",
     "steps": [
@@ -127,19 +140,6 @@
     "passes": false
   },
   {
-    "category": "technical",
-    "description": "CI/CD: GitHub Actions pipelines for PR checks and master publish to GHCR, plus lint fixes and README deployment instructions",
-    "steps": [
-      "PR pipeline (.github/workflows/pr.yml): triggers on pull_request to master, runs yarn install --immutable, yarn lint, yarn test — branch cannot merge without passing checks and an approval",
-      "Publish pipeline (.github/workflows/publish.yml): triggers on push to master (merged PRs), runs yarn install --immutable, yarn lint, yarn test, then builds multi-arch container image via docker/build-push-action using existing Dockerfile and pushes to ghcr.io/twogiants/console-functions-plugin with :latest and :sha-<commit> tags",
-      "Both pipelines use actions/setup-node@v4 with node-version 22, corepack enable, and cache: yarn for Yarn install caching (GitHub runners ship Node 20 by default with corepack disabled)",
-      "Both pipelines authenticate to GHCR using GITHUB_TOKEN secret with packages:write permission (token added to repo's Actions secrets)",
-      "Add yarn lint script to package.json if missing, run it, and fix all lint errors in the codebase",
-      "Update README.md deployment section (lines 96-117) — replace generic Helm boilerplate, placeholder commands, and obsolete OCP 4.10 / i18n notes with concrete instructions: oc new-project console-functions-plugin, helm upgrade -i console-functions-plugin charts/openshift-console-plugin -n console-functions-plugin --create-namespace --set plugin.image=ghcr.io/twogiants/console-functions-plugin:latest@sha256:<digest>"
-    ],
-    "passes": true
-  },
-  {
     "category": "functional",
     "description": "Set GitHub Secret (KUBECONFIG) on created function repos so GH Actions can deploy to the cluster",
     "steps": [
@@ -149,5 +149,23 @@
       "GH Actions workflow can authenticate to the cluster and run func deploy"
     ],
     "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Function Edit Page with TreeView file browser and CodeEditor for editing and deploying function code",
+    "steps": [
+      "SourceControlService extended with fetch(repo) and updateRepo(repo) methods. fetch retrieves full repo tree via git.getTree recursive + blob fetches. updateRepo commits on existing branches with local commit SHA cache for GitHub's eventual consistency",
+      "Navigate to /faas/edit/:name loads files from GitHub via listFunctionRepos + fetch (each page loads its own data from URL params)",
+      "Page layout: toolbar at top (Back link left, success/danger Alert center, Save & Deploy button right), FileTreeView fixed-width left panel (16rem, horizontally scrollable), SDK CodeEditor fills remaining width (70vh height)",
+      "FileTreeView builds nested tree from flat FileEntry[] paths with loading spinner state, empty placeholder state, directories expand/collapse only, files are selectable and update CodeEditor content",
+      "SDK CodeEditor with empty state (code icon + 'Start editing' message) when no file selected, language label visible in header",
+      "CodeEditor language auto-detected from file extension via getLanguageFromPath utility",
+      "Handler file auto-selected on load based on runtime from func.yaml (no fallback selection if handler not found)",
+      "Modified files indicated in tree with dot indicator after filename, dirty state derived by comparing working content against original per file on every onChange",
+      "Save & Deploy button pushes all files to GitHub via updateRepo, resets dirty state on success, shows spinner and disables button during push, shows success alert with auto-dismiss after 2 seconds",
+      "Back to Functions link navigates to /faas directly if clean, shows unsaved changes confirmation modal if dirty",
+      "Empty tree with 'No files' placeholder and disabled Save & Deploy when repo not found, back link always visible"
+    ],
+    "passes": true
   }
 ]

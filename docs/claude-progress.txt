@@ -2,6 +2,27 @@
 # Newest entries first. Agents: append your entry at the top after the header.
 
 ---
+## 2026-04-28 | Session: Function Edit Page
+Worked on: Full Function Edit Page feature (plan 016)
+Completed:
+- Function Edit Page with FileTreeView file browser and SDK CodeEditor
+- FileTreeView component: loading spinner state, empty placeholder, directories-before-files sorting, dirty dot indicators, fixed width with horizontal scroll
+- SDK CodeEditor with empty state (code icon, "Start editing"), language label, auto-selected handler file based on func.yaml runtime
+- EditToolbar with Back link (unsaved changes modal), Save & Deploy (success alert with 2s auto-dismiss, danger alert on error)
+- SourceControlService: fetch(repo) via git.getTree recursive + blob fetches, updateRepo(repo) with local commit SHA cache for GitHub's eventual consistency
+- Decomposed push() into push() (initial commits) and updateRepo() (subsequent commits)
+- Migrated test runner from Jest to Vitest with MSW 2.x for GitHub API mocking
+- Merged RepoInfo + SourceRepo into single RepoMetadata type
+- Extracted parseNamespaceAndRuntime, getLanguageFromPath, handlerMap into shared utils
+- Added CSP connect-src for GitHub API in dev mode (start-console.sh)
+- Removed navigation state passing between pages (each page loads own data from URL params)
+- Added CSS, co-location, React performance rules to style guide and architecture docs
+- Added communication rules and draft PR step to workflow docs
+- 12 test suites, 89 tests, all passing, zero lint errors
+Left off: PR #16 ready for review. Missing test coverage for dirty tracking, save error alert, modal interactions, file selection.
+Blockers: None
+
+---
 ## 2026-04-28 | Session: Runtime PAT entry and user avatar
 Worked on: Replace compile-time PAT injection with runtime modal entry, add user avatar to page headers
 Completed:

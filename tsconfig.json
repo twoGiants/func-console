@@ -8,9 +8,10 @@
     "jsx": "react-jsx",
     "allowJs": true,
     "strict": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "types": ["vitest/globals"]
   },
-  "include": ["src"],
+  "include": ["src", "testing"],
   "exclude": ["node_modules"],
   "ts-node": {
     "files": true,

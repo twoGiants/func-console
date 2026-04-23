@@ -1,3 +1,6 @@
+export const PAT_KEY = 'func-console-pat';
+export const USER_KEY = 'func-console-user';
+
 export interface FileEntry {
   path: string;
   mode: '100644' | '100755' | '120000';
@@ -26,4 +29,8 @@ export interface SourceRepo {
   name: string;
   url: string;
   defaultBranch: string;
+}
+
+export interface ForgeUser {
+  name: string;
 }

@@ -1,23 +1,36 @@
 import { Octokit } from '@octokit/rest';
-import { FileEntry, RepoInfo, SourceRepo } from '../types';
+import { FileEntry, ForgeUser, RepoInfo, SourceRepo } from '../types';
 import { SourceControlService } from './SourceControlService';
 
 export class GithubService implements SourceControlService {
-  private octokit: Octokit;
-  private username: string | undefined;
+  private getToken: () => string;
+  private cachedOctokit: Octokit | null = null;
+  private cachedToken: string = '';
 
-  constructor(pat: string) {
-    this.octokit = new Octokit({ auth: pat });
+  constructor(getToken: () => string) {
+    this.getToken = getToken;
+  }
+
+  private get octokit(): Octokit {
+    const token = this.getToken();
+    if (token !== this.cachedToken) {
+      this.cachedToken = token;
+      this.cachedOctokit = new Octokit({ auth: token });
+    }
+    return this.cachedOctokit!;
+  }
+
+  async fetchUserInfo(pat: string): Promise<ForgeUser> {
+    const octokit = new Octokit({ auth: pat });
+    const { data } = await octokit.users.getAuthenticated();
+    return { name: data.login };
   }
 
   async listFunctionRepos(): Promise<SourceRepo[]> {
-    if (!this.username) {
-      const { data: user } = await this.octokit.users.getAuthenticated();
-      this.username = user.login;
-    }
+    const { data: user } = await this.octokit.users.getAuthenticated();
 
     const { data } = await this.octokit.search.repos({
-      q: `topic:serverless-function user:${this.username}`,
+      q: `topic:serverless-function user:${user.login}`,
     });
 
     return data.items.map((item) => ({

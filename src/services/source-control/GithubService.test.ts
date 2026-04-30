@@ -3,6 +3,20 @@ import { server } from '../../../testing/msw/server';
 import { GithubService } from './GithubService';
 import { FileEntry, RepoMetadata } from '../types';
 
+vi.mock('libsodium-wrappers', () => {
+  const fakeSealed = new Uint8Array([1, 2, 3, 4]);
+  return {
+    default: {
+      ready: Promise.resolve(),
+      base64_variants: { ORIGINAL: 1 },
+      from_base64: () => new Uint8Array([10, 20, 30]),
+      from_string: () => new Uint8Array([5, 6, 7]),
+      crypto_box_seal: () => fakeSealed,
+      to_base64: () => 'AQIDBA==',
+    },
+  };
+});
+
 const GITHUB_API = 'https://api.github.com';
 const GH_SEARCH_REPOS = `${GITHUB_API}/search/repositories`;
 
@@ -485,6 +499,62 @@ describe('GithubService', () => {
         );
       }
     });
+  });
+
+  describe('createSecret', () => {
+    const repo: RepoMetadata = {
+      owner: 'twoGiants',
+      name: 'my-func',
+      url: '',
+      defaultBranch: 'main',
+    };
+
+    it('encrypts and sets a GitHub Actions secret', async () => {
+      const { secretCreated } = setupCreateSecretHandlers();
+
+      const svc = new GithubService(() => 'pat');
+      await svc.createSecret(repo, 'KUBECONFIG', 'kubeconfig-value');
+
+      expect(secretCreated()).toEqual({
+        encrypted_value: 'AQIDBA==',
+        key_id: 'key-id-123',
+      });
+    });
+
+    it('propagates API errors', async () => {
+      setupCreateSecretHandlers({ publicKeyError: true });
+
+      const svc = new GithubService(() => 'pat');
+      await expect(svc.createSecret(repo, 'KUBECONFIG', 'value')).rejects.toThrow();
+    });
+
+    function setupCreateSecretHandlers({
+      publicKeyError = false,
+    }: { publicKeyError?: boolean } = {}) {
+      let _secretPayload: { encrypted_value: string; key_id: string } | null = null;
+
+      server.use(
+        http.get(
+          `${GITHUB_API}/repos/twoGiants/my-func/actions/secrets/public-key`,
+          () =>
+            publicKeyError
+              ? HttpResponse.json({ message: 'Not Found' }, { status: 404 })
+              : HttpResponse.json({ key: 'dGVzdC1wdWJsaWMta2V5', key_id: 'key-id-123' }),
+        ),
+        http.put(
+          `${GITHUB_API}/repos/twoGiants/my-func/actions/secrets/KUBECONFIG`,
+          async ({ request }) => {
+            _secretPayload = (await request.json()) as {
+              encrypted_value: string;
+              key_id: string;
+            };
+            return new HttpResponse(null, { status: 204 });
+          },
+        ),
+      );
+
+      return { secretCreated: () => _secretPayload };
+    }
   });
 });
 

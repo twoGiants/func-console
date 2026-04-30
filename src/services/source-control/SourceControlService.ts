@@ -7,4 +7,5 @@ export interface SourceControlService {
   updateRepo(repo: RepoMetadata, files: FileEntry[], message: string): Promise<void>;
   fetch(repo: RepoMetadata): Promise<FileEntry[]>;
   fetchUserInfo(pat: string): Promise<ForgeUser>;
+  createSecret(repo: RepoMetadata, name: string, value: string): Promise<void>;
 }

@@ -87,7 +87,7 @@ PLUGIN_PORT="$PLUGIN_PORT" yarn start > "$LOG_DIR/webpack.log" 2>&1 &
 
 Agents need to know where the dev server is running so they can connect to it (e.g. for browser testing or API calls).
 
-- **CLAUDE.md**: Add `.dev-env.json` to the knowledge base table, noting it contains the running dev server ports
+- **CLAUDE.md**: Add `.dev-env.json` and `.dev-logs/` to the knowledge base table, noting dev server ports and log file locations respectively
 - **WORKFLOW.md**: Add a step to the Startup Sequence (after "Run `./init.sh`") to read `.dev-env.json` and note the ports
 - **`.claude/commands/init-session.md`**: Add a step to read `.dev-env.json` and report the ports to the user
 
@@ -100,7 +100,7 @@ Agents need to know where the dev server is running so they can connect to it (e
 | `webpack.config.ts` | Read `PLUGIN_PORT` env var with fallback to 9001 |
 | `.gitignore` | Add `.dev-pids/` and `.dev-env.json` |
 | `.dockerignore` | Add `.dev-pids/` and `.dev-env.json` |
-| `CLAUDE.md` | Add `.dev-env.json` to knowledge base table |
+| `CLAUDE.md` | Add `.dev-env.json` and `.dev-logs/` to knowledge base table |
 | `docs/WORKFLOW.md` | Add port discovery step to Startup Sequence |
 | `.claude/commands/init-session.md` | Add step to read and report dev server ports |
 

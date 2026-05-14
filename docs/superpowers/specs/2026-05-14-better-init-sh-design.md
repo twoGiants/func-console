@@ -29,9 +29,10 @@ Multiple repos/worktrees running dev environments simultaneously. Each gets its 
 
 **New:**
 
-- On startup, init.sh picks three random available ports from range 10000-60000
+- By default, init.sh uses the same hardcoded defaults as today (8080, 9001, 9000) so human testers are not surprised
+- When `--randomize-ports` flag is passed, init.sh picks three random available ports from range 10000-60000
 - A `random_free_port()` helper function loops until it finds an unused port (TCP probe check)
-- Ports written to `.dev-env.json` at project root:
+- `.dev-env.json` is always written at project root, regardless of whether ports are randomized or default:
   ```json
   {
     "backendPort": 12345,
@@ -82,15 +83,26 @@ PLUGIN_PORT="$PLUGIN_PORT" yarn start > "$LOG_DIR/webpack.log" 2>&1 &
   > "$LOG_DIR/console.log" 2>&1 &
 ```
 
+### 5. Agent Awareness
+
+Agents need to know where the dev server is running so they can connect to it (e.g. for browser testing or API calls).
+
+- **CLAUDE.md**: Add `.dev-env.json` to the knowledge base table, noting it contains the running dev server ports
+- **WORKFLOW.md**: Add a step to the Startup Sequence (after "Run `./init.sh`") to read `.dev-env.json` and note the ports
+- **`.claude/commands/init-session.md`**: Add a step to read `.dev-env.json` and report the ports to the user
+
 ## Files Modified
 
 | File | Change |
 |------|--------|
-| `init.sh` | PID files, random port allocation, `.dev-env.json` output, inotifywait backend watcher, pass ports downstream, `--stop` reads PIDs/CID |
+| `init.sh` | PID files, `--randomize-ports` flag, `.dev-env.json` output, inotifywait backend watcher, pass ports downstream, `--stop` reads PIDs/CID |
 | `start-console.sh` | Accept `--backend-port`, `--plugin-port`, `--console-port` CLI args with fallback defaults |
 | `webpack.config.ts` | Read `PLUGIN_PORT` env var with fallback to 9001 |
 | `.gitignore` | Add `.dev-pids/` and `.dev-env.json` |
 | `.dockerignore` | Add `.dev-pids/` and `.dev-env.json` |
+| `CLAUDE.md` | Add `.dev-env.json` to knowledge base table |
+| `docs/WORKFLOW.md` | Add port discovery step to Startup Sequence |
+| `.claude/commands/init-session.md` | Add step to read and report dev server ports |
 
 No new files created (besides runtime artifacts which are gitignored/dockerignored).
 
